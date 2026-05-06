@@ -156,9 +156,26 @@
   <script>
     (function () {
       // Store URLs — update these when the app is published
-      var PLAY_STORE_URL  = "https://play.google.com/store/apps/details?id=com.digigene.mobilebodyquiz.mobile_body_quiz";
-      var APP_STORE_URL   = "https://apps.apple.com/sr/app/anatomy-quiz-trivia-body-game/id6605926572";
+      var PLAY_STORE_BASE = "https://play.google.com/store/apps/details?id=com.digigene.mobilebodyquiz.mobile_body_quiz";
+      var APP_STORE_BASE  = "https://apps.apple.com/sr/app/anatomy-quiz-trivia-body-game/id6605926572";
       var REDIRECT_DELAY  = 1500; // ms before auto-redirect
+
+      // Read analytics parameters from the page URL
+      var params = new URLSearchParams(window.location.search);
+      var source = params.get("source") || "";
+      var medium = params.get("medium") || "";
+
+      // Build final URLs with tracking parameters when both source and medium are present
+      var PLAY_STORE_URL = PLAY_STORE_BASE;
+      var APP_STORE_URL  = APP_STORE_BASE;
+      if (source && medium) {
+        PLAY_STORE_URL += "&referrer=" + encodeURIComponent("utm_source=" + source + "&utm_medium=" + medium);
+        APP_STORE_URL  += "&ct=" + encodeURIComponent(source + "_" + medium);
+      }
+
+      // Update button hrefs so desktop clicks also carry the tracking parameters
+      document.getElementById("btn-play").href  = PLAY_STORE_URL;
+      document.getElementById("btn-apple").href = APP_STORE_URL;
 
       var ua = navigator.userAgent || "";
       var isAndroid = /android/i.test(ua);
